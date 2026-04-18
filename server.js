@@ -44,11 +44,26 @@ function runCommand(command, args, description) {
 }
 
 function ensureFrontendBuilt() {
+  const frontendIndexPath = join(DIST_DIR, 'index.html')
   const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
   const frontendNodeModulesDir = join(FRONTEND_DIR, 'node_modules')
-  const frontendIndexPath = join(DIST_DIR, 'index.html')
+  const frontendPackagePath = join(FRONTEND_DIR, 'package.json')
+
+  if (existsSync(frontendIndexPath)) {
+    return
+  }
+
+  if (!existsSync(frontendPackagePath)) {
+    throw new Error('Фронтенд не найден: отсутствует frontend/package.json')
+  }
 
   if (!existsSync(frontendNodeModulesDir)) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'Не найден готовый frontend/dist. Для продакшена закоммить dist или включи собственный Dockerfile.',
+      )
+    }
+
     runCommand(
       npmCommand,
       ['--prefix', 'frontend', 'install', '--include=dev'],
