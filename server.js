@@ -49,7 +49,11 @@ function ensureFrontendBuilt() {
   const frontendIndexPath = join(DIST_DIR, 'index.html')
 
   if (!existsSync(frontendNodeModulesDir)) {
-    runCommand(npmCommand, ['--prefix', 'frontend', 'install'], 'Устанавливаю зависимости фронтенда')
+    runCommand(
+      npmCommand,
+      ['--prefix', 'frontend', 'install', '--include=dev'],
+      'Устанавливаю зависимости фронтенда',
+    )
   }
 
   if (!existsSync(frontendIndexPath)) {
